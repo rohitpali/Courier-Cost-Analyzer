@@ -41,7 +41,7 @@ Forecast courier costs and detect anomalies using ML
 
 
 ## System Architecture
-
+```mermaid
 flowchart TD
     A[Web Application - Flask UI] --> B[File Upload System]
     B --> C[Data Processing Engine]
@@ -53,7 +53,7 @@ flowchart TD
     F --> H
     D --> E
     E --> A
-
+```
 
 ## Data Model & Expected Columns
 All input columns are case-insensitive and auto-cleaned. If an input file misses required columns, the app will reject it with a descriptive error message.
