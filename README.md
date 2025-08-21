@@ -42,14 +42,35 @@ Forecast courier costs and detect anomalies using ML
 
 ## System Architecture
 flowchart TD
-    A["Web Application - Flask UI"] --> B["File Upload System"]
-    B --> C["Data Processing Engine"]
-    C --> D["Summarizer"]
-    C --> E["Visualizer"]
-    C --> F["Prediction Engine (optional)"]
-    G["Auth & User Management"] --> A
-    H["Storage: uploads, processed, models, reports"] --> C
+    %% Web application main UI
+    A["Web Application - Flask UI"] 
+
+    %% File handling
+    B["File Upload System"] 
+    A --> B
+
+    %% Data processing
+    C["Data Processing Engine"]
+    B --> C
+
+    %% Submodules
+    D["Summarizer"]
+    E["Visualizer"]
+    F["Prediction Engine (optional)"]
+    C --> D
+    C --> E
+    C --> F
+
+    %% Auth & user management
+    G["Auth & User Management"]
+    G --> A
+
+    %% Storage
+    H["Storage: uploads, processed, models, reports"]
+    H --> C
     F --> H
+
+    %% Flow connections
     D --> E
     E --> A
 
