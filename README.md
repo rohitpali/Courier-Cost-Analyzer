@@ -41,19 +41,17 @@ Forecast courier costs and detect anomalies using ML
 
 
 ## System Architecture
-```mermaid
 flowchart TD
-    A[Web Application - Flask UI] --> B[File Upload System]
-    B --> C[Data Processing Engine]
-    C --> D[Summarizer]
-    C --> E[Visualizer]
-    C --> F[Prediction Engine (optional)]
-    G[Auth & User Management] --> A
-    H[Storage: uploads, processed, models, reports] --> C
+    A["Web Application - Flask UI"] --> B["File Upload System"]
+    B --> C["Data Processing Engine"]
+    C --> D["Summarizer"]
+    C --> E["Visualizer"]
+    C --> F["Prediction Engine (optional)"]
+    G["Auth & User Management"] --> A
+    H["Storage: uploads, processed, models, reports"] --> C
     F --> H
     D --> E
     E --> A
-```
 
 ## Data Model & Expected Columns
 All input columns are case-insensitive and auto-cleaned. If an input file misses required columns, the app will reject it with a descriptive error message.
@@ -185,32 +183,7 @@ The project ships with an optional prediction engine to:
 - Deep-learning-based anomaly detection
 - Multi-language dashboard support
 - Role-based analytics and scheduled email reports
-
-## Project Structure Diagram (detailed)
-
-flowchart LR
-    subgraph Frontend
-        UI[Flask Templates and JS] --> UploadEndpoint[Upload Page]
-        UI --> DashboardEndpoint[Dashboard Page]
-    end
-
-    subgraph Backend
-        UploadEndpoint --> UploadHandler[Data Processor]
-        UploadHandler --> QuarantineStore[Uploads/Quarantine]
-        UploadHandler --> Cleaner[Data Cleaner]
-        Cleaner --> Merger[File Merger]
-        Merger --> Reconciler[Summarizer]
-        Reconciler --> Summaries[Summary CSV/Excel]
-        Reconciler --> VisualGenerator[Visualizer]
-        VisualGenerator --> ReportStore[Reports Folder]
-        Merger --> Predictor[Prediction Engine]
-        Predictor --> ModelStore[Models Folder]
-    end
-
-    Auth[Auth System] --> UploadEndpoint
-    Auth --> DashboardEndpoint
-    ReportingUser[User Roles] --> UI
-
+  
 ## License
 This project is proprietary and confidential. All rights reserved.
 
