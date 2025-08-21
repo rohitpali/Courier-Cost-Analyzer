@@ -41,42 +41,18 @@ Forecast courier costs and detect anomalies using ML
 
 
 ## System Architecture
-graph TD
-    %% Main Web App
-    A["Web Application - Flask UI"]
-
-    %% File Upload
-    B["File Upload System"]
-    A --> B
-
-    %% Data Processing Engine
-    C["Data Processing Engine"]
-    B --> C
-
-    %% Modules under Data Processing
-    D["Summarizer"]
-    E["Visualizer"]
-    F["Prediction Engine (optional)"]
-    C --> D
-    C --> E
-    C --> F
-
-    %% Auth & User Management
-    G["Auth & User Management"]
-    G --> A
-
-    %% Storage
-    H["Storage: uploads, processed, models, reports"]
-    H --> C
+flowchart TD
+    A["Web Application - Flask UI"] --> B["File Upload System"]
+    B --> C["Data Processing Engine"]
+    C --> D["Summarizer"]
+    C --> E["Visualizer"]
+    C --> F["Prediction Engine (optional)"]
+    G["Auth & User Management"] --> A
+    H["Storage: uploads, processed, models, reports"] --> C
     F --> H
-
-    %% Flow connections
     D --> E
     E --> A
-
-    %% Optional config/logger
-    I["Configuration"] --> A
-    J["Logger"] --> A
+    
 ## Data Model & Expected Columns
 All input columns are case-insensitive and auto-cleaned. If an input file misses required columns, the app will reject it with a descriptive error message.
 
