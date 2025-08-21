@@ -1,0 +1,4 @@
+charge_category,Count,Total_Amount_Diff
+Correctly Charged,8,0.0
+Overcharged,114,-7751.2
+Undercharged,2,47.2

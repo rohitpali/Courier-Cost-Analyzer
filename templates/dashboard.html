@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Courier Analyzer Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Welcome, {{ username }} 👋</h1>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+
+    <!-- Upload Form -->
+    <h2>📂 Upload Your Files</h2>
+    <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="files" multiple accept=".csv,.xlsx,.xls" required>
+        <button type="submit">Upload & Analyze</button>
+    </form>
+
+    <!-- Individual File Analysis -->
+    {% if file_summaries %}
+        <h2>📊 File-wise Analysis</h2>
+        {% for summary in file_summaries %}
+            <div class="file-block">
+                <h3>📄 {{ summary.filename }}</h3>
+
+                <!-- Data Preview -->
+                <h4>Data Preview</h4>
+                <div style="overflow-x:auto; max-height:250px;">
+                    <table border="1">
+                        <tr>
+                            {% for col in summary.preview[0].keys() %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                        {% for row in summary.preview %}
+                            <tr>
+                                {% for col, val in row.items() %}
+                                    <td>{{ val }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                <!-- Step by Step Calculations -->
+                {% if summary.calculations %}
+                    <h4>📌 Calculations</h4>
+                    <ul>
+                        {% for key, val in summary.calculations.items() %}
+                            <li>{{ key }} = {{ val }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>⚠️ No calculations available for this file.</p>
+                {% endif %}
+
+                <!-- Chart -->
+                {% if summary.chart_labels and summary.chart_data %}
+                    <h4>📉 Cost by Courier</h4>
+                    <canvas id="chart_{{ loop.index }}" width="400" height="200"></canvas>
+                    <script>
+                        const ctx{{ loop.index }} = document.getElementById('chart_{{ loop.index }}').getContext('2d');
+                        new Chart(ctx{{ loop.index }}, {
+                            type: 'bar',
+                            data: {
+                                labels: {{ summary.chart_labels | tojson }},
+                                datasets: [{
+                                    label: 'Courier Costs',
+                                    data: {{ summary.chart_data | tojson }},
+                                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: { legend: { display: false } }
+                            }
+                        });
+                    </script>
+                {% endif %}
+            </div>
+            <hr>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Merged Final Table -->
+    {% if merged_table %}
+        <h2>📑 Output Data 1 – Resultant Table (All Files Combined)</h2>
+        <div style="overflow-x:auto; max-height:400px;">
+            <table border="1">
+                <tr>
+                    {% for col in merged_table[0].keys() %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in merged_table %}
+                    <tr>
+                        {% for col, val in row.items() %}
+                            <td>{{ val }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+    <!-- Summary Table -->
+    {% if summary_table %}
+        <h2>📊 Output Data 2 – Summary</h2>
+        <table border="1">
+            <tr>
+                <th>Category</th>
+                <th>Count</th>
+                <th>Amount (Rs.)</th>
+            </tr>
+            <tr>
+                <td>Correctly Charged</td>
+                <td>{{ summary_table.correct.count }}</td>
+                <td>{{ summary_table.correct.amount }}</td>
+            </tr>
+            <tr>
+                <td>Overcharged</td>
+                <td>{{ summary_table.over.count }}</td>
+                <td>{{ summary_table.over.amount }}</td>
+            </tr>
+            <tr>
+                <td>Undercharged</td>
+                <td>{{ summary_table.under.count }}</td>
+                <td>{{ summary_table.under.amount }}</td>
+            </tr>
+        </table>
+
+        <!-- Pie Chart -->
+        <h3>📉 Charge Distribution</h3>
+        <canvas id="summaryChart" width="400" height="200"></canvas>
+        <script>
+            const ctxSummary = document.getElementById('summaryChart').getContext('2d');
+            new Chart(ctxSummary, {
+                type: 'pie',
+                data: {
+                    labels: ['Correct', 'Overcharged', 'Undercharged'],
+                    datasets: [{
+                        data: [
+                            {{ summary_table.correct.count | tojson }},
+                            {{ summary_table.over.count | tojson }},
+                            {{ summary_table.under.count | tojson }}
+                        ],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(255, 206, 86, 0.6)'
+                        ]
+                    }]
+                }
+            });
+        </script>
+    {% endif %}
+
+    <!-- Final Prediction -->
+    {% if prediction %}
+        <h2>🔮 Overall Prediction & Recommendation</h2>
+        <p>{{ prediction }}</p>
+    {% endif %}
+</body>
+</html>
